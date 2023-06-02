@@ -1,4 +1,4 @@
-package purchases
+package employees
 
 import (
 	"encoding/json"
@@ -7,14 +7,14 @@ import (
 	"eirc.app/internal/pkg/code"
 	"eirc.app/internal/pkg/log"
 	"eirc.app/internal/pkg/util"
-	purchasesModel "eirc.app/internal/v1/structure/purchases"
+	employeesModel "eirc.app/internal/v1/structure/employees"
 	"gorm.io/gorm"
 )
 
-func (r *resolver) Created(trx *gorm.DB, input *purchasesModel.Created) interface{} {
+func (r *resolver) Created(trx *gorm.DB, input *employeesModel.Created) interface{} {
 	defer trx.Rollback()
 	// Todo 檢查重複
-	purchases, err := r.PurchasesService.WithTrx(trx).Created(input)
+	employees, err := r.EmployeesService.WithTrx(trx).Created(input)
 	if err != nil {
 		log.Error(err)
 
@@ -22,16 +22,16 @@ func (r *resolver) Created(trx *gorm.DB, input *purchasesModel.Created) interfac
 	}
 
 	trx.Commit()
-	return code.GetCodeMessage(code.Successful, purchases.PurchasesID)
+	return code.GetCodeMessage(code.Successful, employees.EmployeesID)
 }
 
-func (r *resolver) List(input *purchasesModel.Fields) interface{} {
+func (r *resolver) List(input *employeesModel.Fields) interface{} {
 
-	output := &purchasesModel.List{}
+	output := &employeesModel.List{}
 	output.Limit = input.Limit
 	output.Page = input.Page
-	quantity, purchases, err := r.PurchasesService.List(input)
-	purchasesByte, err := json.Marshal(purchases)
+	quantity, employees, err := r.EmployeesService.List(input)
+	employeesByte, err := json.Marshal(employees)
 	if err != nil {
 		log.Error(err)
 
@@ -39,7 +39,7 @@ func (r *resolver) List(input *purchasesModel.Fields) interface{} {
 	}
 
 	output.Pages = util.Pagination(quantity, output.Limit)
-	err = json.Unmarshal(purchasesByte, &output.Purchases)
+	err = json.Unmarshal(employeesByte, &output.Employees)
 	if err != nil {
 		log.Error(err)
 
@@ -49,9 +49,9 @@ func (r *resolver) List(input *purchasesModel.Fields) interface{} {
 	return code.GetCodeMessage(code.Successful, output)
 }
 
-func (r *resolver) GetByID(input *purchasesModel.Field) interface{} {
+func (r *resolver) GetByID(input *employeesModel.Field) interface{} {
 
-	base, err := r.PurchasesService.GetByID(input)
+	base, err := r.EmployeesService.GetByID(input)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 
@@ -63,20 +63,20 @@ func (r *resolver) GetByID(input *purchasesModel.Field) interface{} {
 		return code.GetCodeMessage(code.InternalServerError, err)
 	}
 
-	frontPurchases := &purchasesModel.Single{}
-	purchasesByte, _ := json.Marshal(base)
-	err = json.Unmarshal(purchasesByte, &frontPurchases)
+	frontEmployees := &employeesModel.Single{}
+	employeesByte, _ := json.Marshal(base)
+	err = json.Unmarshal(employeesByte, &frontEmployees)
 	if err != nil {
 		log.Error(err)
 
 		return code.GetCodeMessage(code.InternalServerError, err)
 	}
 
-	return code.GetCodeMessage(code.Successful, frontPurchases)
+	return code.GetCodeMessage(code.Successful, frontEmployees)
 }
 
-func (r *resolver) Deleted(input *purchasesModel.Updated) interface{} {
-	_, err := r.PurchasesService.GetByID(&purchasesModel.Field{PurchasesID: input.PurchasesID})
+func (r *resolver) Deleted(input *employeesModel.Updated) interface{} {
+	_, err := r.EmployeesService.GetByID(&employeesModel.Field{EmployeesID: input.EmployeesID})
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 
@@ -88,7 +88,7 @@ func (r *resolver) Deleted(input *purchasesModel.Updated) interface{} {
 		return code.GetCodeMessage(code.InternalServerError, err)
 	}
 
-	err = r.PurchasesService.Deleted(input)
+	err = r.EmployeesService.Deleted(input)
 	if err != nil {
 		log.Error(err)
 
@@ -98,8 +98,8 @@ func (r *resolver) Deleted(input *purchasesModel.Updated) interface{} {
 	return code.GetCodeMessage(code.Successful, "Delete ok!")
 }
 
-func (r *resolver) Updated(input *purchasesModel.Updated) interface{} {
-	purchases, err := r.PurchasesService.GetByID(&purchasesModel.Field{PurchasesID: input.PurchasesID})
+func (r *resolver) Updated(input *employeesModel.Updated) interface{} {
+	employees, err := r.EmployeesService.GetByID(&employeesModel.Field{EmployeesID: input.EmployeesID})
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 
@@ -111,12 +111,12 @@ func (r *resolver) Updated(input *purchasesModel.Updated) interface{} {
 		return code.GetCodeMessage(code.InternalServerError, err)
 	}
 
-	err = r.PurchasesService.Updated(input)
+	err = r.EmployeesService.Updated(input)
 	if err != nil {
 		log.Error(err)
 
 		return code.GetCodeMessage(code.InternalServerError, err)
 	}
 
-	return code.GetCodeMessage(code.Successful, purchases.PurchasesID)
+	return code.GetCodeMessage(code.Successful, employees.EmployeesID)
 }
