@@ -100,7 +100,7 @@ type Created struct {
 	//備註
 	Remark string `json:"remark,omitempty" binding:"required" validate:"required"`
 	//創建者
-	//CreatedBy string `json:"created_by" swaggerignore:"true"`
+	CreatedBy string `json:"created_by" swaggerignore:"true"`
 }
 
 // Field is structure file for search
