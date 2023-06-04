@@ -1,7 +1,7 @@
 CREATE TABLE  purchases_products(
     purchases_products_id uuid default uuid_generate_v4()  NOT NULL,
     purchases_id uuid NOT NULL, 
-    product TEXT NOT NULL,
+    products_id uuid NOT NULL,
     subtotal INTEGER NOT NULL,
     total INTEGER NOT NULL,
     created_by uuid null ,
@@ -20,8 +20,8 @@ create index purchases_products_id_index
 create index purchases_purchases_id_index
     on purchases_products USING hash(purchases_id);
 
-create index purchases_products_product_index
-    on purchases_products (product);
+create index purchases_products_id_product_index
+    on purchases_products USING hash (products_id);
 
 create index purchases_subtotal_index
     on purchases_products (subtotal);

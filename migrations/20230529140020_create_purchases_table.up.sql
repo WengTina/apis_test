@@ -1,7 +1,7 @@
 CREATE TABLE  purchases(
     purchases_id uuid default uuid_generate_v4()  NOT NULL,
-    applicant_name TEXT  NOT NULL,
-    product TEXT NOT NULL,
+    applicant_id uuid  NOT NULL,
+    purchases_product_id uuid NOT NULL,
     quantity INTEGER NOT NULL,
     purchases_reason TEXT NOT NULL,
     purchases_date DATE NOT NULL,
@@ -22,11 +22,11 @@ create index purchases_id_index
 
 
 
-create index purchases_applicant_name_index
-    on purchases (applicant_name);
+create index purchases_applicant_id_index
+    on purchases USING hash (applicant_id);
 
-create index purchases_product_index
-    on purchases (product);
+create index purchases_purchases_product_id_index
+    on purchases USING hash (purchases_product_id);
 
 create index purchases_quantity_index
     on purchases (quantity);

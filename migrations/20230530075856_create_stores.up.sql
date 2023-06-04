@@ -8,7 +8,7 @@ declare
     num integer;
 begin
     if old_id is null then
-        new_id:='dept'||id_number;
+        new_id:='dept-'||id_number;
         return new_id;
     end if;
     
@@ -23,7 +23,7 @@ begin
    
     
     
-    new_id:='dept'||id_number;
+    new_id:='dept-'||id_number;
     return new_id;
 end; 
 $$

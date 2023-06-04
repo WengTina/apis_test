@@ -8,7 +8,10 @@ import (
 	"eirc.app/internal/pkg/log"
 	"eirc.app/internal/pkg/util"
 	employeesModel "eirc.app/internal/v1/structure/employees"
+	"github.com/docker/docker/libcontainerd/supervisor"
+	"google.golang.org/genproto/googleapis/storage/v1"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func (r *resolver) Created(trx *gorm.DB, input *employeesModel.Created) interface{} {
@@ -119,4 +122,55 @@ func (r *resolver) Updated(input *employeesModel.Updated) interface{} {
 	}
 
 	return code.GetCodeMessage(code.Successful, employees.EmployeesID)
+}
+// func (s *storage)GetBySingle(input *model.Base)(output *model.Table, err error){
+// 	query := s.db.Model(&model.Table{}).Preload(clause.Associations)
+// 	if input.EmployeesID != nil{
+// 		query.Where(query:"employees_id = ?",input.EmployeesID)
+// 	}
+
+// 	err =query.First(&output).Error
+// 	if err != nil{
+// 		log.Error(err)
+// 		return output nil,err
+// 	}
+// 	return output,err:nil
+// }
+
+func (s *storage) GetBySingle(input *model.Base) (*model.Table, error) {
+    query := s.db.Model(&model.Table{}).Preload(clause.Associations)
+    if input.EmployeesID != nil {
+        query = query.Where("employees_id = ?", *input.EmployeesID)
+    }
+
+    output := &model.Table{}
+    err := query.First(output).Error
+    if err != nil {
+        log.Error(err)
+        return nil, err
+    }
+
+    return output, nil
+}
+
+func (m *manager) GetBySingle(input *employeesModel.Field)(int,interface{})  {
+	employeesBase, err :=m.EmployeesService.GetBySingle(input)
+	if err != nil{
+		if errors.Is(err,ErrRecordNotFound) :code.DoesNotExist,code.GetCodeMessage(code.InternalServerError, err)
+
+		log.Error(err)
+		return code.InternalServerError,code.GetCodeMessage(code.InternalServerError, err.Error)
+	}
+	
+	output := &employeesModel.Single{}
+	employeesByte,_ :=json.Marshal(employeesByte)
+	err = json.Unmarshal(employeesByte,&output)
+	if err != nil{
+		log.Error(err)
+		return code.InternalServerError,code.GetCodeMessage(code.InternalServerError, err.Error)
+	}
+
+	output.createBy = *employeesByte.createByUsers.Name
+	output.DepartmentsName = *employeesBase.Departments.Name
+	
 }

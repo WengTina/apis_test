@@ -3,6 +3,7 @@ package employees
 import (
 	"time"
 
+	"eirc.app/internal/v1/entity/departments"
 	model "eirc.app/internal/v1/structure"
 )
 
@@ -14,8 +15,10 @@ type Table struct {
 	EmployeesName string `gorm:"column:employees_name;type:TEXT;not null;" json:"employees_name,omitempty"`
 	//角色ID
 	Roles string `gorm:"column:roles;type:UUID;" json:"roles,omitempty"`
-	//部門
-	Department string `gorm:"column:department;type:TEXT;not null;" json:"department,omitempty"`
+	//部門ID
+	DepartmentsID string `gorm:"column:departments_id;type:TEXT;not null;" json:"departments_id,omitempty"`
+	//DEPARTMENTS DATA
+	Departments departments.Table `gorm:"foreignKey:DepartmentsID;references:DepartmentsID json:"departments,omitempty"`
 	// 創建者
 	CreatedBy string `gorm:"column:created_by;type:UUID;" json:"created_by,omitempty"`
 	//創建時間
@@ -31,8 +34,10 @@ type Base struct {
 	EmployeesName string `json:"employees_name,omitempty"`
 	//角色ID
 	Roles string `json:"roles,omitempty"`
-	//部門
-	Department string `json:"department,omitempty"`
+	//部門ID
+	DepartmentsID *string `json:"departments_id,omitempty"`
+	//Departments data
+	Departments departments.Base `json:"departments,omitempty"`
 	// 創建者
 	CreatedBy string ` json:"created_by,omitempty"`
 	//創建時間
@@ -49,8 +54,10 @@ type Single struct {
 	EmployeesName string `json:"employees_name,omitempty"`
 	//角色ID
 	Roles string `json:"roles,omitempty"`
-	//部門
-	Department string `json:"department,omitempty"`
+	//部門ID
+	DepartmentsID string `json:"departments_id,omitempty"`
+	//部門名稱
+	DepartmentsName string `json:"departments_name,omitempty"`
 	// 創建者
 	CreatedBy string ` json:"created_by,omitempty"`
 	//創建時間
@@ -65,8 +72,8 @@ type Created struct {
 	EmployeesName string `json:"employees_name,omitempty" binding:"required" validate:"required"`
 	//角色ID
 	Roles string `json:"roles" binding:"required,uuid4" validate:"required"`
-	//部門
-	Department string `json:"department,omitempty" binding:"required" validate:"required"`
+	//部門ID
+	DepartmentsID string `json:"departments_id,omitempty" binding:"required" validate:"required"`
 	//創建者
 	CreatedBy string `json:"created_by" swaggerignore:"true"`
 }
@@ -80,8 +87,8 @@ type Field struct {
 	EmployeesName *string `json:"employees_name,omitempty" form:"employees_name"`
 	//角色ID
 	Roles *string `json:"roles,omitempty" form:"roles" binding:"omitempty,uuid4"`
-	//部門
-	Department *string `json:"department,omitempty" form:"department"`
+	//部門ID
+	DepartmentsID *string `json:"departments_id,omitempty" form:"departments_id"`
 }
 
 // Fields is the searched structure file (including pagination)
@@ -102,8 +109,8 @@ type List struct {
 		EmployeesName *string `json:"employees_name,omitempty" `
 		//角色ID
 		Roles *string `json:"roles,omitempty" `
-		//部門
-		Department *string `json:"department,omitempty" `
+		//部門ID
+		DepartmentsID *string `json:"departments_id,omitempty" `
 	} `json:"requisitions"`
 	model.OutPage
 }
@@ -118,8 +125,8 @@ type Updated struct {
 	EmployeesName *string `json:"employees_name,omitempty" `
 	//角色ID
 	Roles *string `json:"roles,omitempty" binding:"omitempty,uuid4"`
-	//部門
-	Department *string `json:"department,omitempty" `
+	//部門ID
+	DepartmentsID *string `json:"departments_id,omitempty" `
 }
 
 // TableName sets the insert table name for this struct type
